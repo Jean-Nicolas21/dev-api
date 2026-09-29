@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\City;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -49,6 +50,28 @@ class AppFixtures extends Fixture
 
         $manager->persist($camilleUser);
         #endregion Users
+
+        #region Cities
+        $cities = [
+            "Paris",
+            "Lyon",
+            "Marseille",
+            "Bordeaux",
+            "Lille",
+            "Strasbourg",
+            "Toulouse",
+            "Nantes",
+            "Dijon",
+            "Brest"
+        ];
+
+        foreach ($cities as $city) {
+            $city = new City()
+            ->setName($city)
+            ->setCreatedAt(new \DateTimeImmutable());
+            $manager->persist($city);
+        }
+        #endregion Cities
 
 
         $manager->flush();

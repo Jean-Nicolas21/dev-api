@@ -16,7 +16,7 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
-    private ?Uuid $id;
+    private Uuid $id;
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;

@@ -14,7 +14,11 @@ class CityListOutput
             'description' => 'Identifiant unique de la ville.',
         ])]
         public string $id,
-        #[ApiProperty(description: 'Nom de la ville.')]
+        #[ApiProperty(schema: [
+            'type' => 'string',
+            'description' => 'Nom de la ville.',
+            'example' => 'Ville de test',
+        ])]
         public string $name,
     ){
 

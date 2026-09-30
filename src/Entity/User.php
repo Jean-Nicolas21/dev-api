@@ -2,12 +2,28 @@
 
 namespace App\Entity;
 
+use App\Dto\User\UserDetailsOutput;
+use App\Dto\User\UserRegisterInput;
 use App\Repository\UserRepository;
+use App\State\User\UserRegisterProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use App\Entity\Impl\AbstractEntity;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
+
+#[ApiResource(
+    operations: [
+        new Post(
+            uriTemplate: '/auth/register',
+            input: UserRegisterInput::class,
+            output: UserDetailsOutput::class,
+            processor: UserRegisterProcessor::class,
+        )
+    ]
+)]
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]

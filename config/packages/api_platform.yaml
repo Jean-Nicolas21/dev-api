@@ -14,3 +14,9 @@ api_platform:
         html: ['text/html']
     error_formats:
         jsonproblem: ['application/problem+json']
+    swagger:
+        http_auth:
+            bearerAuth:
+                scheme: bearer
+                bearerFormat: JWT
+        persist_authorization: true

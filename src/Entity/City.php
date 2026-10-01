@@ -12,11 +12,13 @@ use App\Repository\CityRepository;
 use App\State\City\CityCollectionProvider;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
 
 #[ApiResource(
     operations: [
         // GET /api/cities
         new GetCollection(
+            openapi: new OpenApiOperation(security: []),
             paginationEnabled: false,
             output: CityListOutput::class,
             provider: CityCollectionProvider::class,
@@ -34,7 +36,7 @@ use Symfony\Component\Uid\Uuid;
                     ],
                     description: 'Nombre maximum de villes retournées',
                 ),
-            ]
+            ],
         ),
 
     ]

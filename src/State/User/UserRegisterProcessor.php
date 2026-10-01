@@ -4,7 +4,6 @@ namespace App\State\User;
 
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Metadata\Operation;
-use App\Dto\City\CityListOutput;
 use App\Dto\User\UserDetailsOutput;
 use App\Service\UserService;
 

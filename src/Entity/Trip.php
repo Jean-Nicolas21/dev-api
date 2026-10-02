@@ -2,15 +2,59 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use App\Dto\Trip\TripDetailsOutput;
+use App\Dto\Trip\TripListOutput;
+use App\Dto\Trip\TripSearchInput;
 use App\Entity\Enum\CatapultModel;
 use App\Entity\Impl\AbstractEntity;
 use App\Repository\TripRepository;
+use App\State\Trip\TripItemProvider;
+use App\State\Trip\TripSearchProcessor;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
+use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
+use ApiPlatform\OpenApi\Model\Response as OpenApiResponse;
 
+#[ApiResource(operations: [
+    new Post(
+        uriTemplate: '/trips/search',
+        // un Post répond 201 par défaut : cette recherche ne crée rien, le contrat n'y déclare qu'un 200
+        status: 200,
+        openapi: new OpenApiOperation(
+            security: [],
+            // le générateur déduit la réponse du `output:`, qui nomme une classe et non un tableau :
+            // il annonce un objet unique là où l'API rend une liste. On corrige la documentation.
+            responses: ['200' => new OpenApiResponse(
+                description: 'Les lancers disponibles',
+                content: new \ArrayObject(['application/json' => ['schema' => [
+                    'type' => 'array',
+                    // le nom relevé au point 3, pas celui que le contrat écrit
+                    'items' => ['$ref' => '#/components/schemas/Trip.TripListOutput'],
+                ]]]),
+            )],
+        ),
+        input: TripSearchInput::class,
+        output: TripListOutput::class,
+        // on cherche un lancer sans être connecté : le contrat déclare l'opération publique
+        processor: TripSearchProcessor::class,
+    ),
+    new Get(
+        uriTemplate: '/trips/{id}',
+        output: TripDetailsOutput::class,
+        provider: TripItemProvider::class,
+        // on consulte un lancer sans être connecté : le contrat déclare l'opération publique
+        openapi: new OpenApiOperation(
+            security: []
+        ),
+    ),
+])]
 #[ORM\Entity(repositoryClass: TripRepository::class)]
+
 class Trip extends AbstractEntity
 {
     #[ORM\Id]

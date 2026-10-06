@@ -38,6 +38,7 @@ class TripService
 
     public function toList(Trip $trip): TripListOutput
     {
+
         return new TripListOutput(
             id: $trip->getId(),
             origin: $this->cityService->toList($trip->getOrigin()),

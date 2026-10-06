@@ -13,6 +13,6 @@ final class SoftDeleteFilter extends SQLFilter
             return '';
         }
 
-        return sprintf('%s.deletedAt IS NULL', $targetTableAlias);
+        return sprintf('%s.deleted_at IS NULL', $targetTableAlias);
     }
 }

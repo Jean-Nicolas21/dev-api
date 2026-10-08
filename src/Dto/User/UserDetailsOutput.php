@@ -52,6 +52,16 @@ class UserDetailsOutput
                 "description" => "La date à laquelle le compte a été créée.",
             ])]
         public DateTimeImmutable $createdAt,
+
+        #[ApiProperty(
+            schema: [
+                "type" => "string",
+                "format" => "uri",
+                "nullable" => true,
+                "description" => "L'adresse signée de la photo de profil, valable quinze minutes."
+            ]
+        )]
+        public ?string $profilePictureUrl,
     )
     {
     }

@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\OpenApi\Model\RequestBody;
 use App\Dto\User\UserDetailsOutput;
 use App\Dto\User\UserRegisterInput;
 use App\Repository\UserRepository;
 use App\State\User\UserMeProvider;
+use App\State\User\UserProfilePictureProcessor;
 use App\State\User\UserRegisterProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -31,7 +33,29 @@ use ApiPlatform\OpenApi\Model\Operation as OpenApiOperation;
             security: "is_granted('ROLE_USER')",
             output: UserDetailsOutput::class,
             provider: UserMeProvider::class
-        )
+        ),
+        new Post(
+            uriTemplate: '/users/me/profile-picture',
+            // commentaire à faire sur le deserialize = false
+            deserialize: false,
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            output: UserDetailsOutput::class,
+            processor: UserProfilePictureProcessor::class,
+            security: "is_granted('ROLE_USER')",
+            openapi: new OpenApiOperation(
+                requestBody: new RequestBody(
+                    description: 'La nouvelle photo de profil',
+                    content: new \ArrayObject([
+                        'multipart/form-data' => ['schema' => [
+                            'type' => 'object',
+                            'properties' => ['file' => ['type' => 'string', 'format' => 'binary']],
+                            'required' => ['file'],
+                        ]],
+                    ]),
+                    required: true,
+                ),
+            ),
+        ),
     ]
 )]
 
@@ -64,6 +88,9 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lastName = null;
+
+    #[ORM\ManyToOne]
+    private ?Document $profilePicture = null;
 
     public function __construct()
     {
@@ -141,7 +168,7 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     {
         $data = (array) $this;
         $data["\0" . self::class . "\0password"] = hash('crc32c', $this->password);
-        
+
         return $data;
     }
 
@@ -166,6 +193,17 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     {
         $this->lastName = $lastName;
 
+        return $this;
+    }
+
+    public function getProfilePicture(): ?Document
+    {
+        return $this->profilePicture;
+    }
+
+    public function setProfilePicture(?Document $profilePicture): static
+    {
+        $this->profilePicture = $profilePicture;
         return $this;
     }
 }
